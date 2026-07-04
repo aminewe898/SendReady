@@ -13,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    @dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context
 ) : ViewModel() {
 
     val uiState: StateFlow<SettingsUiState> = settingsRepository.isDarkMode
@@ -31,6 +32,17 @@ class SettingsViewModel @Inject constructor(
             is SettingsUiAction.ToggleDarkMode -> {
                 viewModelScope.launch {
                     settingsRepository.setDarkMode(action.enabled)
+                }
+            }
+            SettingsUiAction.ClearCache -> {
+                viewModelScope.launch {
+                    try {
+                        context.cacheDir.deleteRecursively()
+                        // also clear external cache if any
+                        context.externalCacheDir?.deleteRecursively()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }

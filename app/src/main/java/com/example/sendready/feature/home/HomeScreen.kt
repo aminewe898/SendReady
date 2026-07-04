@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -65,6 +66,15 @@ fun HomeScreen(
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia()
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            viewModel.handleUris(uris)
+            onNavigateToCompress()
+        }
+    }
+
+    val documentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenMultipleDocuments()
     ) { uris ->
         if (uris.isNotEmpty()) {
             viewModel.handleUris(uris)
@@ -137,6 +147,22 @@ fun HomeScreen(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            androidx.compose.material3.TextButton(
+                onClick = { documentLauncher.launch(arrayOf("video/*")) }
+            ) {
+                Icon(
+                    imageVector = androidx.compose.material.icons.Icons.Default.FolderOpen,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp).padding(end = 8.dp)
+                )
+                Text(
+                    text = "Browse Files Natively",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
         }
     }
 }

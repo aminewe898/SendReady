@@ -46,6 +46,7 @@ class CompressionForegroundService : Service() {
                 }
                 is CompressionState.Failed -> {
                     notificationManager.cancelNotification()
+                    notificationManager.showFailedNotification(state.error)
                     stopSelf()
                 }
                 is CompressionState.Paused -> {

@@ -56,6 +56,23 @@ class CompressionProgressTracker {
         val estimatedRemainingTimeMs = if (speedBytesPerSecond > 0) {
             (remainingBytes * 1000L) / speedBytesPerSecond
         } else 0L
+        
+        val jobProgressList = currentJobs.mapIndexed { index, job ->
+            val progress = fileProgressMap[job.id] ?: 0
+            val status = when {
+                progress == 100 -> com.example.sendready.core.domain.model.JobStatus.COMPLETED
+                index < currentJobIndex -> com.example.sendready.core.domain.model.JobStatus.COMPLETED
+                index == currentJobIndex -> com.example.sendready.core.domain.model.JobStatus.COMPRESSING
+                else -> com.example.sendready.core.domain.model.JobStatus.PENDING
+            }
+            com.example.sendready.core.domain.model.JobProgress(
+                id = job.id,
+                name = job.metadata.filename,
+                originalSizeBytes = job.metadata.sizeBytes,
+                status = status,
+                progressPercent = progress
+            )
+        }
 
         return CompressionProgressStats(
             overallProgressPercent = overallProgressPercent,
@@ -67,7 +84,8 @@ class CompressionProgressTracker {
             speedBytesPerSecond = speedBytesPerSecond,
             estimatedRemainingTimeMs = estimatedRemainingTimeMs,
             elapsedTimeMs = elapsedTimeMs,
-            bytesSavedSoFar = bytesSavedSoFar
+            bytesSavedSoFar = bytesSavedSoFar,
+            jobProgressList = jobProgressList
         )
     }
 }

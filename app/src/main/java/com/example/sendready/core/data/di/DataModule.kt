@@ -46,7 +46,7 @@ abstract class DataModule {
                 context,
                 AppDatabase::class.java,
                 "sendready_db"
-            ).build()
+            ).fallbackToDestructiveMigration().build()
         }
 
         @Provides

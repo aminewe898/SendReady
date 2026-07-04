@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat
 import com.example.sendready.MainActivity
 import com.example.sendready.R
 import com.example.sendready.core.domain.model.CompressionProgressStats
+import com.example.sendready.core.compression.toUserFriendlyMessage
 
 class CompressionNotificationManager(private val context: Context) {
 
@@ -45,7 +46,7 @@ class CompressionNotificationManager(private val context: Context) {
         val remainingSecs = remainingSeconds % 60
         val timeString = String.format("%dm %02ds", remainingMinutes, remainingSecs)
 
-        val text = "Video ${stats.currentFileIndex} / ${stats.totalFiles} | Remaining: $timeString"
+        val text = "Compressing ${stats.currentFileIndex}/${stats.totalFiles} • $timeString remaining"
 
         val cancelIntent = Intent(context, CompressionForegroundService::class.java).apply {
             action = CompressionForegroundService.ACTION_CANCEL
@@ -66,8 +67,9 @@ class CompressionNotificationManager(private val context: Context) {
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setContentTitle("Compressing videos (${stats.overallProgressPercent}%)")
+            .setContentTitle("SendReady")
             .setContentText(text)
+            .setSubText("${stats.overallProgressPercent}%")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setProgress(100, stats.overallProgressPercent, false)
             .setContentIntent(openAppPendingIntent)
@@ -99,6 +101,26 @@ class CompressionNotificationManager(private val context: Context) {
         notificationManager.notify(FINISHED_NOTIFICATION_ID, notification)
     }
 
+    fun showFailedNotification(error: Throwable) {
+        val openAppIntent = Intent(context, MainActivity::class.java)
+        val openAppPendingIntent = PendingIntent.getActivity(
+            context,
+            1,
+            openAppIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setContentTitle("Compression Failed")
+            .setContentText(error.toUserFriendlyMessage())
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentIntent(openAppPendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        notificationManager.notify(FAILED_NOTIFICATION_ID, notification)
+    }
+
     fun cancelNotification() {
         notificationManager.cancel(NOTIFICATION_ID)
     }
@@ -107,5 +129,6 @@ class CompressionNotificationManager(private val context: Context) {
         const val CHANNEL_ID = "compression_channel"
         const val NOTIFICATION_ID = 1
         const val FINISHED_NOTIFICATION_ID = 2
+        const val FAILED_NOTIFICATION_ID = 3
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -37,11 +38,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.decode.VideoFrameDecoder
+import coil.request.ErrorResult
+import coil.request.ImageRequest
 import com.example.sendready.core.designsystem.components.SREmptyState
 import com.example.sendready.core.domain.model.CompressionResult
 import com.example.sendready.core.navigation.UiAction
@@ -53,7 +63,9 @@ import java.util.Locale
 
 data class HistoryUiState(
     val isLoading: Boolean = false,
-    val items: List<CompressionResult> = emptyList()
+    val items: List<CompressionResult> = emptyList(),
+    val totalBytesSaved: Long = 0L,
+    val totalVideosCompressed: Int = 0
 ) : UiState
 
 sealed interface HistoryUiAction : UiAction {
@@ -108,6 +120,12 @@ fun HistoryScreen(
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    item {
+                        StatisticsDashboard(
+                            totalVideos = uiState.totalVideosCompressed,
+                            totalBytesSaved = uiState.totalBytesSaved
+                        )
+                    }
                     items(uiState.items) { item ->
                         HistoryItemCard(
                             result = item,
@@ -137,11 +155,26 @@ private fun HistoryItemCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Rounded.Videocam,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(end = 16.dp)
+            val context = LocalContext.current
+            val imageLoader = remember {
+                ImageLoader.Builder(context)
+                    .components {
+                        add(VideoFrameDecoder.Factory())
+                    }
+                    .build()
+            }
+            
+            AsyncImage(
+                model = result.outputPath,
+                imageLoader = imageLoader,
+                contentDescription = "Video Thumbnail",
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .size(48.dp)
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop,
+                error = rememberVectorPainter(Icons.Rounded.Videocam),
+                fallback = rememberVectorPainter(Icons.Rounded.Videocam)
             )
             
             Column(modifier = Modifier.weight(1f)) {
@@ -195,5 +228,68 @@ private fun HistoryItemCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun StatisticsDashboard(
+    totalVideos: Int,
+    totalBytesSaved: Long
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
+        ) {
+            Text(
+                text = "Lifetime Stats",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                StatView(
+                    label = "Videos",
+                    value = totalVideos.toString()
+                )
+                
+                val mbSaved = totalBytesSaved / (1024 * 1024)
+                val valueStr = if (mbSaved > 1000) {
+                    String.format("%.1f GB", mbSaved / 1024f)
+                } else {
+                    "$mbSaved MB"
+                }
+                
+                StatView(
+                    label = "Space Saved",
+                    value = valueStr
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatView(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+        )
     }
 }

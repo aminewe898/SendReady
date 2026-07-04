@@ -11,5 +11,6 @@ data class CompressionResult(
     val codec: String,
     val durationMs: Long,
     val outputPath: String,
+    val originalUri: String,
     val thumbnailUri: String?
 )

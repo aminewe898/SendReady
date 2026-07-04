@@ -27,14 +27,20 @@ class EstimateCompressionUseCase @Inject constructor() {
         }
 
         // Apply some heuristics if hardcoded preset
-        if (preset is CompressionPreset.Discord8MB) {
+        if (preset is CompressionPreset.DiscordFree) {
             estimatedBytes = 8L * 1024 * 1024
         }
-        if (preset is CompressionPreset.Discord50MB) {
+        if (preset is CompressionPreset.DiscordNitro) {
             estimatedBytes = 50L * 1024 * 1024
         }
-        if (preset is CompressionPreset.Gmail) {
+        if (preset is CompressionPreset.WhatsApp) {
+            estimatedBytes = 16L * 1024 * 1024
+        }
+        if (preset is CompressionPreset.Email) {
             estimatedBytes = 25L * 1024 * 1024
+        }
+        if (preset is CompressionPreset.Signal) {
+            estimatedBytes = 100L * 1024 * 1024
         }
 
         // Make sure we don't return an estimate larger than the original unless upscaling (rare)
@@ -46,7 +52,9 @@ class EstimateCompressionUseCase @Inject constructor() {
         return CompressionEstimate(
             estimatedSizeBytes = estimatedBytes,
             estimatedTimeMs = estimatedTimeMs,
-            originalSizeBytes = metadata.sizeBytes
+            originalSizeBytes = metadata.sizeBytes,
+            targetVideoBitrateKbps = estimatedBitrateKbps,
+            targetAudioBitrateKbps = audioBitrateKbps
         )
     }
 
@@ -58,20 +66,28 @@ class EstimateCompressionUseCase @Inject constructor() {
             is CompressionPreset.MaxQuality -> (originalBitrateKbps * 0.8).toInt()
             is CompressionPreset.Balanced -> (originalBitrateKbps * 0.5).toInt()
             is CompressionPreset.SmallFile -> (originalBitrateKbps * 0.25).toInt()
-            is CompressionPreset.WhatsApp -> 2500 // WhatsApp usually compresses to ~2-3 Mbps
+            is CompressionPreset.WhatsApp -> {
+                val durationS = max(1L, metadata.durationMs / 1000)
+                ((16 * 8192) / durationS).toInt() - 128
+            }
             is CompressionPreset.Telegram -> 3000
-            is CompressionPreset.Discord8MB -> {
+            is CompressionPreset.Instagram, is CompressionPreset.TikTok, is CompressionPreset.YouTubeShorts -> 5000 // typical 1080p target
+            is CompressionPreset.DiscordFree -> {
                 // To hit 8MB, max bitrate = (8MB * 8) / durationSeconds
                 val durationS = max(1L, metadata.durationMs / 1000)
                 ((8 * 8192) / durationS).toInt() - 128 // minus audio
             }
-            is CompressionPreset.Discord50MB -> {
+            is CompressionPreset.DiscordNitro -> {
                 val durationS = max(1L, metadata.durationMs / 1000)
                 ((50 * 8192) / durationS).toInt() - 128
             }
-            is CompressionPreset.Gmail -> {
+            is CompressionPreset.Email -> {
                 val durationS = max(1L, metadata.durationMs / 1000)
                 ((25 * 8192) / durationS).toInt() - 128
+            }
+            is CompressionPreset.Signal -> {
+                val durationS = max(1L, metadata.durationMs / 1000)
+                ((100 * 8192) / durationS).toInt() - 128
             }
             is CompressionPreset.SmartTargetSize -> {
                 val durationS = max(1L, metadata.durationMs / 1000)

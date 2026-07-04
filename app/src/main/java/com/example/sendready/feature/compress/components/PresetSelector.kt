@@ -48,11 +48,41 @@ fun PresetSelector(
         
         Spacer(modifier = Modifier.height(12.dp))
         
+        Text(
+            text = "Social & Messaging",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+        
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(CompressionPreset.builtInPresets.filterNotNull()) { preset ->
+            items(CompressionPreset.socialPresets.filterNotNull()) { preset ->
+                val isSelected = preset.id == selectedPreset.id
+                PresetChip(
+                    text = preset.displayName,
+                    isSelected = isSelected,
+                    onClick = { onPresetSelected(preset) }
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Text(
+            text = "Quality & Custom Size",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(CompressionPreset.qualityPresets.filterNotNull()) { preset ->
                 val isSelected = preset.id == selectedPreset.id
                 PresetChip(
                     text = preset.displayName,

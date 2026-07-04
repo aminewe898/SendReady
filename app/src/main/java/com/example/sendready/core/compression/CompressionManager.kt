@@ -146,8 +146,11 @@ class CompressionManager @Inject constructor(
                 is CompressionPreset.Custom -> {
                     if (preset.resolution != VideoResolution.ORIGINAL) preset.resolution.height else null
                 }
-                is CompressionPreset.Discord8MB, is CompressionPreset.Discord50MB, is CompressionPreset.SmallFile -> {
-                    720 // Cap at 720p for small presets
+                is CompressionPreset.DiscordFree, is CompressionPreset.DiscordNitro, is CompressionPreset.SmallFile, is CompressionPreset.WhatsApp, is CompressionPreset.Telegram, is CompressionPreset.Signal, is CompressionPreset.Email -> {
+                    720 // Cap at 720p for messaging/small presets
+                }
+                is CompressionPreset.Instagram, is CompressionPreset.TikTok, is CompressionPreset.YouTubeShorts -> {
+                    1080 // Cap at 1080p for social media presets
                 }
                 is CompressionPreset.MaxQuality -> {
                     null // Keep original
@@ -176,9 +179,27 @@ class CompressionManager @Inject constructor(
                 .setEffects(effects)
                 .build()
 
+            val encoderFactory = androidx.media3.transformer.DefaultEncoderFactory.Builder(context).apply {
+                if (job.estimate?.targetVideoBitrateKbps != null) {
+                    setRequestedVideoEncoderSettings(
+                        androidx.media3.transformer.VideoEncoderSettings.Builder()
+                            .setBitrate(job.estimate.targetVideoBitrateKbps * 1000)
+                            .build()
+                    )
+                }
+                if (job.estimate?.targetAudioBitrateKbps != null) {
+                    setRequestedAudioEncoderSettings(
+                        androidx.media3.transformer.AudioEncoderSettings.Builder()
+                            .setBitrate(job.estimate.targetAudioBitrateKbps * 1000)
+                            .build()
+                    )
+                }
+            }.build()
+
             Log.d("CompressionManager", "Building Transformer")
             val transformer = Transformer.Builder(context)
                 .setVideoMimeType(targetVideoMimeType)
+                .setEncoderFactory(encoderFactory)
                 .addListener(object : Transformer.Listener {
                     override fun onCompleted(composition: Composition, exportResult: ExportResult) {
                         Log.d("CompressionManager", "Transformer completed successfully for job: ${job.id}")
@@ -197,7 +218,8 @@ class CompressionManager @Inject constructor(
                             codec = exportResult.videoEncoderName ?: "Unknown",
                             durationMs = job.metadata.durationMs,
                             outputPath = outputPath,
-                            thumbnailUri = job.metadata.uriString // Reuse original for now
+                            originalUri = job.metadata.uriString,
+                            thumbnailUri = null
                         )
                         
                         // Save to history DB

@@ -31,6 +31,7 @@ data class SettingsUiState(
 
 sealed interface SettingsUiAction : UiAction {
     data class ToggleDarkMode(val enabled: Boolean) : SettingsUiAction
+    data object ClearCache : SettingsUiAction
 }
 
 sealed interface SettingsUiEvent : UiEvent
@@ -72,6 +73,32 @@ fun SettingsScreen(
                     onCheckedChange = { isChecked ->
                         viewModel.onAction(SettingsUiAction.ToggleDarkMode(isChecked))
                     }
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.padding(SendReadyTheme.spacing.medium))
+        
+        SRCard(
+            modifier = Modifier.androidx.compose.foundation.clickable {
+                viewModel.onAction(SettingsUiAction.ClearCache)
+            }
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(SendReadyTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = androidx.compose.material.icons.Icons.Default.Delete,
+                    contentDescription = null,
+                    tint = SendReadyTheme.colorScheme.error
+                )
+                Spacer(modifier = Modifier.width(SendReadyTheme.spacing.medium))
+                Text(
+                    text = "Clear Cache",
+                    style = SendReadyTheme.typography.bodyLarge,
+                    color = SendReadyTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
                 )
             }
         }

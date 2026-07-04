@@ -41,6 +41,7 @@ class CompressionHistoryRepositoryImpl @Inject constructor(
         codec = codec,
         durationMs = durationMs,
         outputPath = outputPath,
+        originalUri = originalUri,
         thumbnailUri = thumbnailUri
     )
 
@@ -55,6 +56,7 @@ class CompressionHistoryRepositoryImpl @Inject constructor(
         codec = codec,
         durationMs = durationMs,
         outputPath = outputPath,
+        originalUri = originalUri,
         thumbnailUri = thumbnailUri
     )
 }

@@ -19,7 +19,16 @@ class HistoryViewModel @Inject constructor(
 
     val uiState: StateFlow<HistoryUiState> = historyRepository.getAllHistory()
         .map { historyList ->
-            HistoryUiState(isLoading = false, items = historyList)
+            var totalSaved = 0L
+            for (item in historyList) {
+                totalSaved += Math.max(0L, item.originalSizeBytes - item.compressedSizeBytes)
+            }
+            HistoryUiState(
+                isLoading = false,
+                items = historyList,
+                totalBytesSaved = totalSaved,
+                totalVideosCompressed = historyList.size
+            )
         }
         .stateIn(
             scope = viewModelScope,

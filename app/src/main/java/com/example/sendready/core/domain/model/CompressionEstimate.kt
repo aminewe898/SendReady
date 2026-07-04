@@ -3,7 +3,9 @@ package com.example.sendready.core.domain.model
 data class CompressionEstimate(
     val estimatedSizeBytes: Long,
     val estimatedTimeMs: Long,
-    val originalSizeBytes: Long
+    val originalSizeBytes: Long,
+    val targetVideoBitrateKbps: Int? = null,
+    val targetAudioBitrateKbps: Int? = null
 ) {
     val savingsBytes: Long
         get() = (originalSizeBytes - estimatedSizeBytes).coerceAtLeast(0)

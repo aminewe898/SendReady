@@ -16,5 +16,6 @@ data class HistoryEntity(
     val codec: String,
     val durationMs: Long,
     val outputPath: String,
+    val originalUri: String,
     val thumbnailUri: String?
 )

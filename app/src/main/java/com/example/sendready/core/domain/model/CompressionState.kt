@@ -10,7 +10,16 @@ data class CompressionProgressStats(
     val speedBytesPerSecond: Long = 0L,
     val estimatedRemainingTimeMs: Long = 0L,
     val elapsedTimeMs: Long = 0L,
-    val bytesSavedSoFar: Long = 0L
+    val bytesSavedSoFar: Long = 0L,
+    val jobProgressList: List<JobProgress> = emptyList()
+)
+
+data class JobProgress(
+    val id: String,
+    val name: String,
+    val originalSizeBytes: Long,
+    val status: JobStatus,
+    val progressPercent: Int = 0
 )
 
 sealed class CompressionState {

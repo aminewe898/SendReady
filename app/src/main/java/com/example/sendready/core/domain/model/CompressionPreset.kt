@@ -32,11 +32,15 @@ enum class AudioConfig(val displayName: String, val bitrateKbps: Int) {
 
 sealed class CompressionPreset(val id: String, val displayName: String) {
     // Built-in presets
-    data object Discord8MB : CompressionPreset("discord_8", "Discord (8 MB)")
-    data object Discord50MB : CompressionPreset("discord_50", "Discord (50 MB)")
-    data object WhatsApp : CompressionPreset("whatsapp", "WhatsApp")
-    data object Telegram : CompressionPreset("telegram", "Telegram")
-    data object Gmail : CompressionPreset("gmail", "Gmail (25 MB)")
+    data object DiscordFree : CompressionPreset("discord_free", "Discord Free (8 MB)")
+    data object DiscordNitro : CompressionPreset("discord_nitro", "Discord Nitro (50 MB)")
+    data object WhatsApp : CompressionPreset("whatsapp", "WhatsApp (16 MB)")
+    data object Telegram : CompressionPreset("telegram", "Telegram (2 GB)")
+    data object Signal : CompressionPreset("signal", "Signal (100 MB)")
+    data object Instagram : CompressionPreset("instagram", "Instagram (1080p)")
+    data object TikTok : CompressionPreset("tiktok", "TikTok (1080p)")
+    data object YouTubeShorts : CompressionPreset("yt_shorts", "YouTube Shorts (1080p)")
+    data object Email : CompressionPreset("email", "Email (25 MB)")
     
     // Quality presets
     data object MaxQuality : CompressionPreset("max_quality", "Maximum Quality")
@@ -56,9 +60,17 @@ sealed class CompressionPreset(val id: String, val displayName: String) {
     ) : CompressionPreset("custom", "Custom")
 
     companion object {
-        val builtInPresets: List<CompressionPreset>
+        val socialPresets: List<CompressionPreset>
             get() = listOf(
-                Discord8MB, Discord50MB, WhatsApp, Telegram, Gmail, MaxQuality, Balanced, SmallFile
+                DiscordFree, DiscordNitro, WhatsApp, Telegram, Signal, Instagram, TikTok, YouTubeShorts, Email
             )
+            
+        val qualityPresets: List<CompressionPreset>
+            get() = listOf(
+                MaxQuality, Balanced, SmallFile
+            )
+
+        val builtInPresets: List<CompressionPreset>
+            get() = socialPresets + qualityPresets
     }
 }

@@ -34,10 +34,11 @@ fun CompressionMeters(
         is CompressionPreset.MaxQuality -> 0.95f
         is CompressionPreset.Balanced -> 0.7f
         is CompressionPreset.SmallFile -> 0.4f
-        is CompressionPreset.Discord8MB, is CompressionPreset.SmartTargetSize -> 0.5f // Variable
-        is CompressionPreset.Discord50MB -> 0.75f
-        is CompressionPreset.WhatsApp, is CompressionPreset.Telegram -> 0.6f
-        is CompressionPreset.Gmail -> 0.7f
+        is CompressionPreset.DiscordFree, is CompressionPreset.SmartTargetSize -> 0.5f // Variable
+        is CompressionPreset.DiscordNitro -> 0.75f
+        is CompressionPreset.WhatsApp, is CompressionPreset.Telegram, is CompressionPreset.Signal -> 0.6f
+        is CompressionPreset.Email -> 0.7f
+        is CompressionPreset.Instagram, is CompressionPreset.TikTok, is CompressionPreset.YouTubeShorts -> 0.85f
         is CompressionPreset.Custom -> 0.8f
     }
 

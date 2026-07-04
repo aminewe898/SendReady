@@ -26,8 +26,9 @@ data class QueueItem(
 
 data class CompressUiState(
     val queue: List<QueueItem> = emptyList(),
-    val selectedPreset: CompressionPreset = CompressionPreset.Discord8MB,
+    val selectedPreset: CompressionPreset = CompressionPreset.DiscordFree,
     val totalEstimate: CompressionEstimate? = null,
+    val recommendation: String? = null,
     val isLoading: Boolean = false
 )
 
@@ -36,10 +37,11 @@ class CompressViewModel @Inject constructor(
     private val videoQueueRepository: VideoQueueRepository,
     private val mediaRepository: MediaRepository,
     private val estimateCompressionUseCase: EstimateCompressionUseCase,
+    private val getSmartRecommendationUseCase: com.example.sendready.core.domain.usecase.GetSmartRecommendationUseCase,
     private val compressionManager: com.example.sendready.core.compression.CompressionManager
 ) : ViewModel() {
 
-    private val _selectedPreset = MutableStateFlow<CompressionPreset>(CompressionPreset.Discord8MB)
+    private val _selectedPreset = MutableStateFlow<CompressionPreset>(CompressionPreset.DiscordFree)
     private val _metadataCache = MutableStateFlow<Map<String, VideoMetadata>>(emptyMap())
     private val _isLoading = MutableStateFlow(false)
 
@@ -66,10 +68,13 @@ class CompressViewModel @Inject constructor(
             null
         }
 
+        val recommendation = getSmartRecommendationUseCase(validMetadata, preset)
+
         CompressUiState(
             queue = queueItems,
             selectedPreset = preset,
             totalEstimate = totalEstimate,
+            recommendation = recommendation,
             isLoading = isLoading
         )
     }.stateIn(

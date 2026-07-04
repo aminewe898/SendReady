@@ -16,8 +16,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -121,6 +126,38 @@ fun CompressScreen(
                             onPresetSelected = viewModel::selectPreset,
                             onSmartTargetMbChanged = viewModel::setSmartTargetMb
                         )
+                    }
+
+                    // Smart Recommendation
+                    if (uiState.recommendation != null) {
+                        item {
+                            val isWarning = uiState.recommendation!!.startsWith("Warning")
+                            val backgroundColor = if (isWarning) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.secondaryContainer
+                            val textColor = if (isWarning) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSecondaryContainer
+                            val icon = if (isWarning) Icons.Default.Warning else Icons.Default.Info
+
+                            androidx.compose.foundation.layout.Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(backgroundColor)
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    tint = textColor
+                                )
+                                Text(
+                                    text = uiState.recommendation!!,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = textColor
+                                )
+                            }
+                        }
                     }
 
                     // Estimate Card
