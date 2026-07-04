@@ -15,4 +15,15 @@ abstract class DataModule {
     abstract fun bindSettingsRepository(
         settingsRepositoryImpl: SettingsRepositoryImpl
     ): SettingsRepository
+
+    @Binds
+    abstract fun bindMediaRepository(
+        mediaRepositoryImpl: com.example.sendready.core.data.repository.MediaRepositoryImpl
+    ): com.example.sendready.core.domain.repository.MediaRepository
+
+    @Binds
+    abstract fun bindVideoQueueRepository(
+        videoQueueRepositoryImpl: com.example.sendready.core.data.repository.VideoQueueRepositoryImpl
+    ): com.example.sendready.core.domain.repository.VideoQueueRepository
 }
+

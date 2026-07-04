@@ -11,19 +11,23 @@ import com.example.sendready.core.navigation.UiAction
 import com.example.sendready.core.navigation.UiEvent
 import com.example.sendready.core.navigation.UiState
 
+@Suppress("unused")
 data class HistoryUiState(
     val isLoading: Boolean = false,
     val items: List<String> = emptyList() // Will be replaced by domain models later
 ) : UiState
 
 sealed interface HistoryUiAction : UiAction {
+    @Suppress("unused")
     data class DeleteHistoryItem(val id: String) : HistoryUiAction
 }
 
 sealed interface HistoryUiEvent : UiEvent {
+    @Suppress("unused")
     data class NavigateToFinished(val videoId: String) : HistoryUiEvent
 }
 
+@Suppress("UNUSED_PARAMETER")
 @Composable
 fun HistoryScreen(
     onNavigateToFinished: (String) -> Unit,
