@@ -152,11 +152,13 @@ fun CompressScreen(
                     .padding(16.dp)
             ) {
                 SRButton(
-                    text = "Start Compression",
+                    text = if (uiState.isLoading) "Loading Info..." else "Start Compression",
                     onClick = {
-                        // TODO: Implement starting the compression service/work manager
-                        onNavigateToProgress("batch_id_placeholder")
+                        if (viewModel.startCompression()) {
+                            onNavigateToProgress("active_batch")
+                        }
                     },
+                    enabled = !uiState.isLoading && uiState.queue.all { it.metadata != null },
                     modifier = Modifier.fillMaxWidth()
                 )
             }

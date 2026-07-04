@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
     kotlin("kapt")
 }
 
@@ -80,7 +81,7 @@ dependencies {
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 
     // DataStore
     implementation(libs.datastore.preferences)
@@ -92,6 +93,7 @@ dependencies {
     // Media3 (Not implemented yet, but included for foundation)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.transformer)
+    implementation(libs.media3.effect)
     implementation(libs.media3.ui)
 
     // Tooling

@@ -35,7 +35,8 @@ data class CompressUiState(
 class CompressViewModel @Inject constructor(
     private val videoQueueRepository: VideoQueueRepository,
     private val mediaRepository: MediaRepository,
-    private val estimateCompressionUseCase: EstimateCompressionUseCase
+    private val estimateCompressionUseCase: EstimateCompressionUseCase,
+    private val compressionManager: com.example.sendready.core.compression.CompressionManager
 ) : ViewModel() {
 
     private val _selectedPreset = MutableStateFlow<CompressionPreset>(CompressionPreset.Discord8MB)
@@ -117,5 +118,23 @@ class CompressViewModel @Inject constructor(
 
     fun reorderVideo(fromIndex: Int, toIndex: Int) {
         videoQueueRepository.reorderQueue(fromIndex, toIndex)
+    }
+
+    fun startCompression(): Boolean {
+        val currentState = uiState.value
+        val jobs = currentState.queue.mapNotNull { item ->
+            val meta = item.metadata ?: return@mapNotNull null
+            com.example.sendready.core.domain.model.CompressionJob(
+                id = java.util.UUID.randomUUID().toString(),
+                metadata = meta,
+                preset = currentState.selectedPreset,
+                estimate = estimateCompressionUseCase(meta, currentState.selectedPreset)
+            )
+        }
+        if (jobs.isNotEmpty()) {
+            compressionManager.start(jobs)
+            return true
+        }
+        return false
     }
 }
