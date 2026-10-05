@@ -2,6 +2,7 @@ package com.example.sendready.core.compression
 
 import androidx.media3.transformer.ExportException
 
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 fun Throwable.toUserFriendlyMessage(): String {
     if (this is ExportException) {
         return when (this.errorCode) {

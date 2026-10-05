@@ -33,6 +33,7 @@ data class CompressUiState(
 )
 
 @HiltViewModel
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class CompressViewModel @Inject constructor(
     private val videoQueueRepository: VideoQueueRepository,
     private val mediaRepository: MediaRepository,

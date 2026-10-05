@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class FinishedViewModel @Inject constructor(
     private val compressionManager: CompressionManager
 ) : ViewModel() {

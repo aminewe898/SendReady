@@ -91,7 +91,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.video)
 
-    // Media3 (Not implemented yet, but included for foundation)
+    // Media3 playback and compression transformation.
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.transformer)
     implementation(libs.media3.effect)

@@ -22,6 +22,10 @@ Windows: `gradlew.bat assembleDebug testDebugUnitTest lintDebug`. No signed prod
 
 ## Current status
 
-The old Phase 2 README understated the implementation: later commits add the media queue, compression pipeline, history, and UX. The latest source is an in-development prototype. Existing tests are limited, and fresh Android build/device validation is still needed.
+The old Phase 2 README understated the implementation: later commits add the media queue, compression pipeline, history, and UX. The latest source is an in-development prototype.
+
+On 2026-10-05, a fresh JDK 17 build passed `assembleDebug testDebugUnitTest lintDebug` after fixing machine-specific Gradle paths, Compose compilation errors, and explicit Media3 unstable-API opt-ins. Lint still reports warnings. The single existing unit test only prints Transformer method signatures and contains no behavioral assertions, so it does not establish compression correctness.
+
+Physical-device validation is still needed for exported playback, compression estimates/quality, queue cancellation, lifecycle/background behavior, storage permissions, and sharing. Release signing and the minified release build were not verified; the release configuration references a `proguard-rules.pro` file that is currently absent. See [validation record](docs/PORTFOLIO_VALIDATION.md).
 
 The project remains private. It is deliberately omitted from public profile links because a recruiter cannot inspect its implementation without access.

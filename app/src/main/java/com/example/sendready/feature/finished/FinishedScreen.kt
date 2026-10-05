@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +32,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.background
@@ -278,7 +284,8 @@ fun BeforeAfterSlider(
     compressedPath: String,
     modifier: Modifier = Modifier
 ) {
-    var sliderPosition by androidx.compose.runtime.mutableStateOf(0.5f)
+    var sliderPosition by remember { mutableStateOf(0.5f) }
+    var sliderWidth by remember { mutableIntStateOf(0) }
     val context = LocalContext.current
     
     val imageLoader = androidx.compose.runtime.remember {
@@ -291,6 +298,7 @@ fun BeforeAfterSlider(
 
     Box(
         modifier = modifier
+            .onSizeChanged { sliderWidth = it.width }
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
@@ -349,8 +357,8 @@ fun BeforeAfterSlider(
                     .fillMaxSize()
                     .background(Color.White)
                     .align(Alignment.CenterStart)
-                    .androidx.compose.foundation.layout.offset {
-                        IntOffset((size.width * sliderPosition - thumbWidth.toPx() / 2).roundToInt(), 0)
+                    .offset {
+                        IntOffset((sliderWidth * sliderPosition - thumbWidth.toPx() / 2).roundToInt(), 0)
                     }
             )
             
