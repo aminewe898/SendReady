@@ -1,40 +1,27 @@
 # SendReady
 
-Modern Android video compression application built with Kotlin and Jetpack Compose.
+A private Android video-compression project using Kotlin, Jetpack Compose, and Media3. The source implements media selection, a compression queue, foreground-service progress, history, settings, and a sharing flow.
 
-## Features
+## Architecture
 
-- Material Design 3
-- AMOLED Dark Mode
-- Modern MVVM Architecture
-- Hilt Dependency Injection
-- Media3 Integration
-- Fast Video Compression
-- Compression Presets
-- Batch Processing
-- Compression History
-- Beautiful Animations
+- `core/compression/`: Media3 transformation, progress tracking, service/notifications.
+- `core/domain/`: presets, metadata, queue/state models, estimates, repository interfaces.
+- `core/data/`: Room history, DataStore settings, media and queue repositories.
+- `feature/`: home, compression, progress, finished, history, and settings screens.
+- Hilt supplies dependencies; coroutine flows carry state into Compose.
 
-## Tech Stack
+## Build and inspect
 
-- Kotlin
-- Jetpack Compose
-- Material 3
-- Hilt
-- Room
-- DataStore
-- Navigation Compose
-- Media3
-- Coroutines
+Open the project in Android Studio with an Android SDK compatible with compileSdk 36 and a JDK 17 toolchain. The minimum supported Android API is 26.
 
-## Status
+```sh
+./gradlew assembleDebug testDebugUnitTest lintDebug
+```
 
-🚧 Currently under active development.
+Windows: `gradlew.bat assembleDebug testDebugUnitTest lintDebug`. No signed production build or app-store publication is claimed. Use test media, then verify exported playback, sizes, cancellation, background execution, permissions, and sharing on physical devices.
 
-Phase 2 ✅ Foundation Complete
+## Current status
 
-Next:
-- Media Picker
-- Compression Engine
-- Export Pipeline
-- Share Flow
+The old Phase 2 README understated the implementation: later commits add the media queue, compression pipeline, history, and UX. The latest source is an in-development prototype. Existing tests are limited, and fresh Android build/device validation is still needed.
+
+The project remains private. It is deliberately omitted from public profile links because a recruiter cannot inspect its implementation without access.
