@@ -1,6 +1,6 @@
 # SendReady
 
-A private Android video-compression project using Kotlin, Jetpack Compose, and Media3. The source implements media selection, a compression queue, foreground-service progress, history, settings, and a sharing flow.
+An Android video-compression project using Kotlin, Jetpack Compose, and Media3. The source implements media selection, a compression queue, foreground-service progress, history, settings, and a sharing flow.
 
 ## Architecture
 
@@ -28,4 +28,4 @@ On 2026-10-05, a fresh JDK 17 build passed `assembleDebug testDebugUnitTest lint
 
 Physical-device validation is still needed for exported playback, compression estimates/quality, queue cancellation, lifecycle/background behavior, storage permissions, and sharing. Release signing and the minified release build were not verified; the release configuration references a `proguard-rules.pro` file that is currently absent. See [validation record](docs/PORTFOLIO_VALIDATION.md).
 
-The project remains private. It is deliberately omitted from public profile links because a recruiter cannot inspect its implementation without access.
+The source is public for technical review. This is an in-development prototype, not a finished production release.
